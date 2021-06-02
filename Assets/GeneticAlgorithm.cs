@@ -20,13 +20,14 @@ public class GeneticAlgorithm
     private float sum_fitness_values;
     private float crossover_rate;
 
-    public GeneticAlgorithm(int n_params, int m_population)
+    public GeneticAlgorithm(int n_params, int m_population, float xover_rate)
     {
         this.n_params = n_params;
         this.m_population = m_population;
+        crossover_rate = xover_rate;
+
         population = new Individual[m_population];
         fitness_values = new float[m_population];
-        crossover_rate = 0.5f; //TODO magic number
         target_individual = new Individual(new float[] {0});
 
         for (int i = 0; i < m_population; i++)
@@ -108,7 +109,7 @@ public class GeneticAlgorithm
             prob[i] = UnityEngine.Random.Range(0f, 1f);
         Array.Sort(prob);
 
-        int[] selection = new int[m_population]; //initialize array to hold selected chromosomes
+        int[] selection = new int[m_population]; //initialize array to hold selected chromosomes indicies
 
         for (int i = 0; i < m_population; i++)
         {
@@ -147,7 +148,14 @@ public class GeneticAlgorithm
         {
             for (int j = 0; j < selection[i]; j++)// For each selection of this chromosone index (i) can be 0
             {
-                indexDistribution[currentIndex] = i;
+                try
+                {
+                    indexDistribution[currentIndex] = i;
+                }
+                catch(IndexOutOfRangeException e)
+                {
+                    Debug.Log("INDEXERRORBUG");
+                }
                 currentIndex++;
             }
        
@@ -178,7 +186,7 @@ public class GeneticAlgorithm
 
     public void PrintOut(int timeStep)
     {
-        Debug.Log("--------Population " + timeStep);
+        Debug.Log("--------Population: " + timeStep + " ---------------");
 
         for (int i = 0; i < m_population; i++)
             for (int j = 0; j < n_params; j++)
