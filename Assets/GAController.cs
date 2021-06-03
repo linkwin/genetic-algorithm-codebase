@@ -23,17 +23,28 @@ public class GAController : MonoBehaviour
     [Tooltip("The total number of timesteps to run the GA")]
     public int timeSteps = 25;
 
-    private int numParams = 1;
+    /* Derived from the length of targetParams*/
+    private int numParams;
 
+    /* Object handling GA logic*/
     GeneticAlgorithm ga;
 
-    EventRaiser generationDisplayUpdate;
+    /*FUuture Use*/
+    EventRaiser generationDisplayUpdate;//TODO
 
-    Text generationDisplay;
+    Text generationDisplay;//TODO
 
-    Text[] paramDisplays;
+    Text[] paramDisplays;//TODO
 
-    // Start is called before the first frame update
+    /*
+     * Setup GA object with parameters supplied from unity editor.
+     * 
+     * Starts Time Step coroutine which calls the GA update method and
+     * displays results of each generation to the screen.
+     * 
+     * Temporarily sets up UI elements for displaying GA test data.
+     * 
+     */
     void Start()
     {
         generationDisplayUpdate = GetComponent<EventRaiser>();
@@ -46,6 +57,11 @@ public class GAController : MonoBehaviour
         StartCoroutine(TimeStep());
     }
 
+    /*
+     * Update loop for running GA.
+     * 
+     * Defined as a Unity coroutine to allow easy timestep control.
+     */
     IEnumerator TimeStep()
     {
         for (int i = 0; i < timeSteps; i++)
@@ -56,7 +72,7 @@ public class GAController : MonoBehaviour
 
             string generation = "Generation " + i + "\n";
             string[] generationTable = new string[numParams];
-            for (int j = 0; j < populationSize; j++)
+            for (int j = 0; j < populationSize; j++)//populate generation table with parameters from each individual.
             {
                 for (int k = 0; k < numParams; k++)
                 {
@@ -64,9 +80,9 @@ public class GAController : MonoBehaviour
                 }
             }
 
-            for (int f = 0 + 1; f < numParams + 1; f++)
+            for (int f = 0 + 1; f < numParams + 1; f++)//display generation table in text boxes on screen
             {
-                paramDisplays[f].text = generationTable[f - 1];
+                paramDisplays[f].text = generationTable[f - 1];//TODO
             }
 
             //generationDisplayUpdate.RaiseEvent();
@@ -76,9 +92,4 @@ public class GAController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
