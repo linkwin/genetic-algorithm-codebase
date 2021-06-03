@@ -21,7 +21,7 @@ public class GeneticAlgorithm
     private float crossover_rate;
     private float mutation_rate;
 
-    public GeneticAlgorithm(int n_params, int m_population, float crossover_rate, float mutation_rate)
+    public GeneticAlgorithm(int n_params, int m_population, float crossover_rate, float mutation_rate, float[] target)
     {
         this.n_params = n_params;
         this.m_population = m_population;
@@ -30,7 +30,7 @@ public class GeneticAlgorithm
 
         population = new Individual[m_population];
         fitness_values = new float[m_population];
-        target_individual = new Individual(new float[] {0});//TODO remove hardcoded target
+        target_individual = new Individual(target);
 
         for (int i = 0; i < m_population; i++)
         {
