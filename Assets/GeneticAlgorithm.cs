@@ -5,19 +5,23 @@ using UnityEngine;
 
 public class GeneticAlgorithm
 {
-
-    /* Number of parameters in each chromosome/individual i.e. dimensionality */
+    /* Number of parameters in each individual */
     private int n_params;
-    /* Number of chromosome in each generation */
+
+    /* Number of individuals in each generation */
     private int m_population;
 
-    /* Goal/ Solution */
+    /* Goal/ Solution parameter set. */
     private Individual target_individual;
 
+    /* Current generation*/
     private Individual[] population;
 
-    private float[] fitness_values;//fitness values of each individual in population
+    /* Fitness values of each individual in current population. */
+    private float[] fitness_values;
+    /* Current sum of fittness values, calculated each generation. */
     private float sum_fitness_values;
+
     private float crossover_rate;
     private float mutation_rate;
 
@@ -38,7 +42,9 @@ public class GeneticAlgorithm
         }
     }
 
-    //Timestep
+    /**
+     * Called once per timestep/generation.
+     */
     public void RunGA()
     {
         CalculateFitnessValues();
@@ -56,6 +62,10 @@ public class GeneticAlgorithm
     }
 
 
+    /**
+     * Calculates the fitness values of each individual using fitness function defined in 
+     * the individual.
+     */
     void CalculateFitnessValues()
     {
         for (int i = 0; i < m_population; i++)
@@ -64,6 +74,8 @@ public class GeneticAlgorithm
         }
     }
 
+
+    //TODO
     Individual CrossOver(Individual p, Individual m)
     {
         int s = sizeof(float);
@@ -112,6 +124,8 @@ public class GeneticAlgorithm
     /**
      * Selects chromosomes (Individuals) from current population with best relative fit, 
      * determined by roulette wheel method. 
+     * 
+     * TODO: restructure into atomic testable methods.
      * 
      * <returns> Population of chromosones selected </returns>
      */
@@ -183,6 +197,11 @@ public class GeneticAlgorithm
         return new_population;
     }
 
+    /**
+     * Simply sums up all the fitness values of the current generation.
+     * 
+     * <returns> The sum of the fitness values of each individual in the current population.  </returns>
+     */ 
     float SumFitnessValues()
     {
         float sum = 0;
@@ -192,12 +211,24 @@ public class GeneticAlgorithm
         return sum;
     }
 
+    /**
+     * Calculates the fitness probability of individual <em>i</em>. This calculation is used
+     * in roulette wheel selection method.
+     * 
+     * <param name="i"> The index of the individual to calculate the fitness probability of. </param>
+     * <returns> The fitness prbability of individual i </returns>
+     */
     float FitnessProbability(int i)
     {
         return fitness_values[i] / sum_fitness_values;
     }
 
 
+    /**
+     * Prints a debug log of current population parameters.
+     * 
+     * <param name="timeStep"> The timestep that this method was called on, aka the generation number.</param>
+     */
     public void PrintOut(int timeStep)
     {
         Debug.Log("--------Population: " + timeStep + " ---------------");
@@ -207,6 +238,13 @@ public class GeneticAlgorithm
                 Debug.Log(population[i].Parameters[j]);
     }
 
+    /**
+     * Pakages parameters of individual at <em>index</em> into a string array.
+     * 
+     * <param name="index"> The index of Individual to get string of</param>
+     * 
+     * <returns> String array with parameters of individual specified by <em>index</em></returns>
+     */
     public string[] DisplayIndividual(int index)
     {
         string[] returnVal = new string[n_params];
