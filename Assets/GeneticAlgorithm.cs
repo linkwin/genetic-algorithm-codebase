@@ -19,16 +19,18 @@ public class GeneticAlgorithm
     private float[] fitness_values;//fitness values of each individual in population
     private float sum_fitness_values;
     private float crossover_rate;
+    private float mutation_rate;
 
-    public GeneticAlgorithm(int n_params, int m_population, float xover_rate)
+    public GeneticAlgorithm(int n_params, int m_population, float crossover_rate, float mutation_rate)
     {
         this.n_params = n_params;
         this.m_population = m_population;
-        crossover_rate = xover_rate;
+        this.crossover_rate = crossover_rate;
+        this.mutation_rate = mutation_rate;
 
         population = new Individual[m_population];
         fitness_values = new float[m_population];
-        target_individual = new Individual(new float[] {0});
+        target_individual = new Individual(new float[] {0});//TODO remove hardcoded target
 
         for (int i = 0; i < m_population; i++)
         {
@@ -80,17 +82,29 @@ public class GeneticAlgorithm
                 m_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
         }
 
-        int crossover_index = (int) (crossover_rate * (n_params * s));
+        BitArray offspring_chromosome = new BitArray(offspring);
+        BitArray p_parent_chromosome = new BitArray(p_parent);
+        BitArray m_parent_chromosome = new BitArray(m_parent);
 
-        for (int i = 0; i < n_params * s; i++)
+        int crossover_index = (int) (crossover_rate * (p_parent_chromosome.Length));
+
+        for (int i = 0; i < p_parent_chromosome.Length; i++)
         {
             if (i != crossover_index)
-                offspring[i] = p_parent[i];
+                offspring_chromosome[i] = p_parent_chromosome[i];
             else
-                offspring[i] = m_parent[i];
+                offspring_chromosome[i] = m_parent_chromosome[i];
         }
 
-        //TODO mutate offspring
+        //----MUTATE----
+        int bitsToMutate = (int) (mutation_rate * offspring_chromosome.Length);
+        for (int i = 0; i < bitsToMutate; i++)
+        {
+            int randIndex = UnityEngine.Random.Range(0, offspring_chromosome.Length);
+            offspring_chromosome[randIndex] = !offspring_chromosome[randIndex];
+        }
+
+        offspring_chromosome.CopyTo(offspring, 0);//TODO does this work?
 
         return new Individual(offspring, n_params);
     }

@@ -8,7 +8,8 @@ public class GAController : MonoBehaviour
     public int populationSize = 6;
     public int numParams = 1;
 
-    public float crossoverRate;
+    public float crossoverRate = 0.5f;
+    public float mutationRate = 0.1f;
 
     public float simulationSpeed = 5f;
     public int timeSteps = 25;
@@ -17,7 +18,7 @@ public class GAController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ga = new GeneticAlgorithm(numParams, populationSize, crossoverRate);
+        ga = new GeneticAlgorithm(numParams, populationSize, crossoverRate, mutationRate);
         StartCoroutine(TimeStep());
     }
 
