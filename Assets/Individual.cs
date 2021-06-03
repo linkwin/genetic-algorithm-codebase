@@ -48,7 +48,7 @@ public class Individual
      * 
      * <param name="goal"> The target set of parameters </param>
      * 
-     * <returns> Euclidian distance between <em>parameters</em> and <em>target</em> </returns>
+     * <returns> 1 / Euclidian distance between <em>parameters</em> and <em>target</em> </returns>
      */
     public float Fitness(float[] goal)
     {
@@ -58,7 +58,7 @@ public class Individual
             sum += (parameters[i] - goal[i]) * (parameters[i] - goal[i]);
         }
 
-        return Mathf.Sqrt(sum);
+        return 1 / Mathf.Sqrt(sum);
     }
 
 
