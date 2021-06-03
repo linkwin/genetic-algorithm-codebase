@@ -207,14 +207,12 @@ public class GeneticAlgorithm
                 Debug.Log(population[i].Parameters[j]);
     }
 
-    public string DisplayIndividual(int index)
+    public string[] DisplayIndividual(int index)
     {
-        string returnVal = "";
+        string[] returnVal = new string[n_params];
         for (int i = 0; i < n_params; i++)
         {
-            returnVal += population[index].Parameters[i];
-            if (i != n_params - 1)
-                returnVal += ", ";
+            returnVal[i] = population[index].Parameters[i].ToString();
         }
         return returnVal;
     }
