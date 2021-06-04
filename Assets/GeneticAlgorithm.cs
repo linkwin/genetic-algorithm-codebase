@@ -83,40 +83,60 @@ public class GeneticAlgorithm
         byte[] p_parent = new byte[n_params * s];
         byte[] m_parent = new byte[n_params * s];
 
-        for (int i = 0; i < n_params; i++)
-        {
-            byte[] p_bytes = BitConverter.GetBytes(p.Parameters[i]);//initialize byte array for parameter i
-            for (int j = 0; j < s; j++)
-                p_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
-
-            byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
-            for (int j = 0; j < s; j++)
-                m_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
-        }
-
         BitArray offspring_chromosome = new BitArray(offspring);
         BitArray p_parent_chromosome = new BitArray(p_parent);
         BitArray m_parent_chromosome = new BitArray(m_parent);
 
+        bool[] o_chromosome = new bool[offspring_chromosome.Length];
+
         int crossover_index = (int) (crossover_rate * (p_parent_chromosome.Length));
 
-        for (int i = 0; i < p_parent_chromosome.Length; i++)
+        for (int i = 0; i < n_params; i++)
         {
-            if (i != crossover_index)
-                offspring_chromosome[i] = p_parent_chromosome[i];
-            else
-                offspring_chromosome[i] = m_parent_chromosome[i];
+            byte[] p_bytes = BitConverter.GetBytes(p.Parameters[i]);//initialize byte array for parameter i
+            BitArray p_param = new BitArray(p_bytes);
+//            for (int j = 0; j < s; j++)
+//                p_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
+
+            byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
+            BitArray m_param = new BitArray(m_bytes);
+
+            //crossover
+            int k = 0;
+            for (int j = i * s; k < p_param.Length; j++)
+            {
+                if (k != crossover_index)
+                    o_chromosome[j] = p_param[k];
+                else
+                    o_chromosome[j] = m_param[k];
+                k++;
+            }
+
+            
+//            for (int j = 0; j < s; j++)
+//                m_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
         }
+
+
+
+//        for (int i = 0; i < p_parent_chromosome.Length; i++)
+//        {
+//            if (i != crossover_index)
+//                offspring_chromosome[i] = p_parent_chromosome[i];
+//            else
+//                offspring_chromosome[i] = m_parent_chromosome[i];
+//        }
 
         //----MUTATE----
-        int bitsToMutate = (int) (mutation_rate * offspring_chromosome.Length);
+        int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
         for (int i = 0; i < bitsToMutate; i++)
         {
-            int randIndex = UnityEngine.Random.Range(0, offspring_chromosome.Length);
-            offspring_chromosome[randIndex] = !offspring_chromosome[randIndex];
+            int randIndex = UnityEngine.Random.Range(0, o_chromosome.Length);
+            o_chromosome[randIndex] = !o_chromosome[randIndex];
         }
 
-        offspring_chromosome.CopyTo(offspring, 0);//TODO does this work?
+        BitArray test = new BitArray(o_chromosome);
+        test.CopyTo(offspring, 0);//TODO does this work?
 
         return new Individual(offspring, n_params);
     }

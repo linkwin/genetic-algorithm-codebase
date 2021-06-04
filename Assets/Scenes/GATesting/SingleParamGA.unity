@@ -254,7 +254,8 @@ MonoBehaviour:
   crossoverRate: 0.1
   mutationRate: 0.045
   targetParams:
-  - 15.5
+  - 10
+  - 10
   simulationSpeed: 0.5
   timeSteps: 100
 --- !u!4 &238569235
