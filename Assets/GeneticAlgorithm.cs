@@ -106,7 +106,17 @@ public class GeneticAlgorithm
             DoCrossOver(p_param, m_param, crossover_index).CopyTo(o_chromosome, i * p_param.Length);
         }
 
-        //----MUTATE----
+        o_chromosome = DoMutate(o_chromosome);
+
+        BitArray o_bitarray = new BitArray(o_chromosome);
+        o_bitarray.CopyTo(offspring, 0);
+
+        return new Individual(offspring, n_params);
+    }
+
+    bool[] DoMutate(bool[] o_chromosome)
+    {
+        
         int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
         for (int i = 0; i < bitsToMutate; i++)
         {
@@ -114,11 +124,10 @@ public class GeneticAlgorithm
             o_chromosome[randIndex] = !o_chromosome[randIndex];
         }
 
-        BitArray test = new BitArray(o_chromosome);
-        test.CopyTo(offspring, 0);//TODO does this work?
-
-        return new Individual(offspring, n_params);
+        return o_chromosome;
     }
+
+
 
     /**
      * Returns result of crossover: p_param - [0, crossover index] 
