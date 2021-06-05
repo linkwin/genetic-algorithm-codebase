@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class GeneticAlgorithm
 {
@@ -25,12 +24,16 @@ public class GeneticAlgorithm
     private float crossover_rate;
     private float mutation_rate;
 
+    private Random random;
+
     public GeneticAlgorithm(int n_params, int m_population, float crossover_rate, float mutation_rate, float[] target)
     {
         this.n_params = n_params;
         this.m_population = m_population;
         this.crossover_rate = crossover_rate;
         this.mutation_rate = mutation_rate;
+
+        random = new Random();
 
         population = new Individual[m_population];
         fitness_values = new float[m_population];
@@ -55,7 +58,7 @@ public class GeneticAlgorithm
         Individual[] new_population = new Individual[m_population];
         for (int i = 0; i < m_population; i++)
         {
-            new_population[i] = CrossOver(selections[i], selections[UnityEngine.Random.Range(0, m_population)]);// Crossover each chromosome with a random chromosome from selections
+            new_population[i] = CrossOver(selections[i], selections[random.Next(0, m_population)]);// Crossover each chromosome with a random chromosome from selections
         }
 
         Array.Copy(new_population, population, m_population);// Carryon next generation
@@ -75,50 +78,89 @@ public class GeneticAlgorithm
     }
 
 
-    //TODO
-    Individual CrossOver(Individual p, Individual m)
+    /**
+     * Builds chromosomes from the parameters of <em>m</em> and <em>p</em> called parents.  
+     * Produces offspring by crossing over bits of parameters defined by crossover rate. 
+     * Then mutates (flips a bit on) each Individual at random influenced by mutation rate.
+     * 
+     * <returns> Individual after the result of crossover operation and mutation. </returns>
+     * <param name="m"> Maternal parent. </param>
+     * <param name="p"> Paternal parent. </param>
+     */
+    Individual CrossOver(Individual p, Individual m)//TODO generalize to n parents
     {
         int s = sizeof(float);
         byte[] offspring = new byte[n_params * s];
-        byte[] p_parent = new byte[n_params * s];
-        byte[] m_parent = new byte[n_params * s];
+
+        BitArray offspring_chromosome = new BitArray(offspring);
+
+        bool[] o_chromosome = new bool[offspring_chromosome.Length];
+
+        int crossover_index = (int) (crossover_rate * (offspring_chromosome.Length));
 
         for (int i = 0; i < n_params; i++)
         {
             byte[] p_bytes = BitConverter.GetBytes(p.Parameters[i]);//initialize byte array for parameter i
-            for (int j = 0; j < s; j++)
-                p_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
+            BitArray p_param = new BitArray(p_bytes);
 
             byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
-            for (int j = 0; j < s; j++)
-                m_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
+            BitArray m_param = new BitArray(m_bytes);
+
+            DoCrossOver(p_param, m_param, crossover_index).CopyTo(o_chromosome, i * p_param.Length);
         }
 
-        BitArray offspring_chromosome = new BitArray(offspring);
-        BitArray p_parent_chromosome = new BitArray(p_parent);
-        BitArray m_parent_chromosome = new BitArray(m_parent);
+        o_chromosome = DoMutate(o_chromosome);
 
-        int crossover_index = (int) (crossover_rate * (p_parent_chromosome.Length));
-
-        for (int i = 0; i < p_parent_chromosome.Length; i++)
-        {
-            if (i != crossover_index)
-                offspring_chromosome[i] = p_parent_chromosome[i];
-            else
-                offspring_chromosome[i] = m_parent_chromosome[i];
-        }
-
-        //----MUTATE----
-        int bitsToMutate = (int) (mutation_rate * offspring_chromosome.Length);
-        for (int i = 0; i < bitsToMutate; i++)
-        {
-            int randIndex = UnityEngine.Random.Range(0, offspring_chromosome.Length);
-            offspring_chromosome[randIndex] = !offspring_chromosome[randIndex];
-        }
-
-        offspring_chromosome.CopyTo(offspring, 0);//TODO does this work?
+        BitArray o_bitarray = new BitArray(o_chromosome);
+        o_bitarray.CopyTo(offspring, 0);
 
         return new Individual(offspring, n_params);
+    }
+
+    /**
+     * Calculates how many bits to mutate based on mutation rate, and flips the
+     * bits of that many random bits.
+     * 
+     * <param name="o_chromosome"> Chromosome to mutate. </param>
+     * <returns> The mutated chromosome. </returns>
+     */
+    bool[] DoMutate(bool[] o_chromosome)
+    {
+        
+        int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
+        for (int i = 0; i < bitsToMutate; i++)
+        {
+            int randIndex = random.Next(0, o_chromosome.Length);
+            o_chromosome[randIndex] = !o_chromosome[randIndex];
+        }
+
+        return o_chromosome;
+    }
+
+
+
+    /**
+     * Returns result of crossover: p_param - [0, crossover index] 
+     *                              m_param - [crossover index, end of array].
+     * 
+     * <param name="m_param"> Maternal parent chromosome 32 bit length for floating point (short) type. </param>
+     * <param name="p_param"> Paternal parent chromosome 32 bit length for floating point (short) type. </param>
+     * <param name="crossover_index"> The index in p_param array to begin cross over. </param>
+     * 
+     */
+    BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index)//TODO generalize to n crossover points
+    {
+        BitArray offspring = new BitArray(p_param.Length);
+
+        for (int j = 0; j < p_param.Length; j++)
+        {
+            if (j != crossover_index)
+                offspring[j] = p_param[j];
+            else
+                offspring[j] = m_param[j];
+        }
+
+        return offspring;
     }
 
     /**
@@ -134,7 +176,7 @@ public class GeneticAlgorithm
         //-----roulette wheel method--------
         float[] prob = new float[m_population]; //initialize array to hold randomly generated probability values, one for each chromosome(Individual)
         for (int i = 0; i < m_population; i++)
-            prob[i] = UnityEngine.Random.Range(0f, 1f);
+            prob[i] = (float) random.NextDouble();
         Array.Sort(prob);
 
         int[] selection = new int[m_population]; //initialize array to hold selected chromosomes indicies
@@ -182,7 +224,7 @@ public class GeneticAlgorithm
                 }
                 catch(IndexOutOfRangeException e)
                 {
-                    Debug.Log("INDEXERRORBUG");
+                    Console.WriteLine("INDEXERRORBUG");
                 }
                 currentIndex++;
             }
@@ -231,11 +273,11 @@ public class GeneticAlgorithm
      */
     public void PrintOut(int timeStep)
     {
-        Debug.Log("--------Population: " + timeStep + " ---------------");
+        Console.WriteLine("--------Population: " + timeStep + " ---------------");
 
         for (int i = 0; i < m_population; i++)
             for (int j = 0; j < n_params; j++)
-                Debug.Log(population[i].Parameters[j]);
+                Console.WriteLine(population[i].Parameters[j]);
     }
 
     /**
@@ -253,5 +295,15 @@ public class GeneticAlgorithm
             returnVal[i] = population[index].Parameters[i].ToString();
         }
         return returnVal;
+    }
+
+    /**
+     * Returns current generation individual at location <em>index</em>.
+     * 
+     * <returns> Current generation individual at location <em>index</em>. </returns>
+     */
+    public Individual getIndividual(int index)
+    {
+        return population[index];
     }
 }

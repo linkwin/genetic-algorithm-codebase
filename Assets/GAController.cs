@@ -36,6 +36,10 @@ public class GAController : MonoBehaviour
 
     Text[] paramDisplays;//TODO
 
+    public GameObject point;
+
+    private GameObject[] objectPool;
+
     /*
      * Setup GA object with parameters supplied from unity editor.
      * 
@@ -47,6 +51,12 @@ public class GAController : MonoBehaviour
      */
     void Start()
     {
+        objectPool = new GameObject[populationSize];
+        for (int i = 0; i < objectPool.Length; i++)
+        {
+            objectPool[i] = GameObject.Instantiate(point, Vector3.zero, point.transform.rotation);
+        }
+
         generationDisplayUpdate = GetComponent<EventRaiser>();
 
         generationDisplay = GameObject.FindGameObjectWithTag("GenerationDisplay").GetComponent<Text>();
@@ -83,6 +93,12 @@ public class GAController : MonoBehaviour
             for (int f = 0 + 1; f < numParams + 1; f++)//display generation table in text boxes on screen
             {
                 paramDisplays[f].text = generationTable[f - 1];//TODO
+            }
+
+            for (int k = 0; k < populationSize; k++)
+            {
+                Individual I = ga.getIndividual(k);
+//                objectPool[k].transform.position = new Vector3(I.Parameters[0], I.Parameters[1], 0);
             }
 
             //generationDisplayUpdate.RaiseEvent();
