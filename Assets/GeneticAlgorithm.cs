@@ -114,6 +114,13 @@ public class GeneticAlgorithm
         return new Individual(offspring, n_params);
     }
 
+    /**
+     * Calculates how many bits to mutate based on mutation rate, and flips the
+     * bits of that many random bits.
+     * 
+     * <param name="o_chromosome"> Chromosome to mutate. </param>
+     * <returns> The mutated chromosome. </returns>
+     */
     bool[] DoMutate(bool[] o_chromosome)
     {
         
