@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class GeneticAlgorithm
 {
@@ -25,12 +24,16 @@ public class GeneticAlgorithm
     private float crossover_rate;
     private float mutation_rate;
 
+    private Random random;
+
     public GeneticAlgorithm(int n_params, int m_population, float crossover_rate, float mutation_rate, float[] target)
     {
         this.n_params = n_params;
         this.m_population = m_population;
         this.crossover_rate = crossover_rate;
         this.mutation_rate = mutation_rate;
+
+        random = new Random();
 
         population = new Individual[m_population];
         fitness_values = new float[m_population];
@@ -55,7 +58,7 @@ public class GeneticAlgorithm
         Individual[] new_population = new Individual[m_population];
         for (int i = 0; i < m_population; i++)
         {
-            new_population[i] = CrossOver(selections[i], selections[UnityEngine.Random.Range(0, m_population)]);// Crossover each chromosome with a random chromosome from selections
+            new_population[i] = CrossOver(selections[i], selections[random.Next(0, m_population)]);// Crossover each chromosome with a random chromosome from selections
         }
 
         Array.Copy(new_population, population, m_population);// Carryon next generation
@@ -127,7 +130,7 @@ public class GeneticAlgorithm
         int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
         for (int i = 0; i < bitsToMutate; i++)
         {
-            int randIndex = UnityEngine.Random.Range(0, o_chromosome.Length);
+            int randIndex = random.Next(0, o_chromosome.Length);
             o_chromosome[randIndex] = !o_chromosome[randIndex];
         }
 
@@ -173,7 +176,7 @@ public class GeneticAlgorithm
         //-----roulette wheel method--------
         float[] prob = new float[m_population]; //initialize array to hold randomly generated probability values, one for each chromosome(Individual)
         for (int i = 0; i < m_population; i++)
-            prob[i] = UnityEngine.Random.Range(0f, 1f);
+            prob[i] = random.NextDouble();
         Array.Sort(prob);
 
         int[] selection = new int[m_population]; //initialize array to hold selected chromosomes indicies
@@ -221,7 +224,7 @@ public class GeneticAlgorithm
                 }
                 catch(IndexOutOfRangeException e)
                 {
-                    Debug.Log("INDEXERRORBUG");
+                    Console.WriteLine("INDEXERRORBUG");
                 }
                 currentIndex++;
             }
@@ -270,11 +273,11 @@ public class GeneticAlgorithm
      */
     public void PrintOut(int timeStep)
     {
-        Debug.Log("--------Population: " + timeStep + " ---------------");
+        Console.WriteLine("--------Population: " + timeStep + " ---------------");
 
         for (int i = 0; i < m_population; i++)
             for (int j = 0; j < n_params; j++)
-                Debug.Log(population[i].Parameters[j]);
+                Console.WriteLine(population[i].Parameters[j]);
     }
 
     /**
