@@ -75,35 +75,37 @@ public class GeneticAlgorithm
     }
 
 
-    //TODO
-    Individual CrossOver(Individual p, Individual m)
+    /**
+     * Builds chromosomes from the parameters of <em>m</em> and <em>p</em> called parents.  
+     * Produces offspring by crossing over bits of parameters defined by crossover rate. 
+     * Then mutates (flips a bit on) each Individual at random influenced by mutation rate.
+     * 
+     * <returns> Individual after the result of crossover operation and mutation. </returns>
+     * <param name="m"> Maternal parent. </param>
+     * <param name="p"> Paternal parent. </param>
+     */
+    Individual CrossOver(Individual p, Individual m)//TODO generalize to n parents
     {
         int s = sizeof(float);
         byte[] offspring = new byte[n_params * s];
-        byte[] p_parent = new byte[n_params * s];
-        byte[] m_parent = new byte[n_params * s];
 
         BitArray offspring_chromosome = new BitArray(offspring);
-        BitArray p_parent_chromosome = new BitArray(p_parent);
-        BitArray m_parent_chromosome = new BitArray(m_parent);
 
         bool[] o_chromosome = new bool[offspring_chromosome.Length];
 
-        int crossover_index = (int) (crossover_rate * (p_parent_chromosome.Length));
+        int crossover_index = (int) (crossover_rate * (offspring_chromosome.Length));
 
         for (int i = 0; i < n_params; i++)
         {
             byte[] p_bytes = BitConverter.GetBytes(p.Parameters[i]);//initialize byte array for parameter i
             BitArray p_param = new BitArray(p_bytes);
-//            for (int j = 0; j < s; j++)
-//                p_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
 
             byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
             BitArray m_param = new BitArray(m_bytes);
 
-            //crossover
+            //-----Crossover-----
             int k = 0;
-            for (int j = i * p_param.Length; k < p_param.Length; j++)
+            for (int j = i * p_param.Length; k < p_param.Length; j++)// Crossover each param and stack in offspring chromosome array
             {
                 if (k != crossover_index)
                     o_chromosome[j] = p_param[k];
@@ -112,20 +114,7 @@ public class GeneticAlgorithm
                 k++;
             }
 
-            
-//            for (int j = 0; j < s; j++)
-//                m_parent[i * s + j] = p_bytes[j];//stack bytes in parent byte array in sets of 4 (for float)
         }
-
-
-
-//        for (int i = 0; i < p_parent_chromosome.Length; i++)
-//        {
-//            if (i != crossover_index)
-//                offspring_chromosome[i] = p_parent_chromosome[i];
-//            else
-//                offspring_chromosome[i] = m_parent_chromosome[i];
-//        }
 
         //----MUTATE----
         int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
