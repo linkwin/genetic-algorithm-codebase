@@ -259,6 +259,7 @@ MonoBehaviour:
   - 29
   simulationSpeed: 0.5
   timeSteps: 100
+  point: {fileID: 6797116644366311275, guid: 37143d80eaabfd3469046347e3f38395, type: 3}
 --- !u!4 &238569235
 Transform:
   m_ObjectHideFlags: 0

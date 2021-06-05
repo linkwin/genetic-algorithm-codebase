@@ -103,17 +103,7 @@ public class GeneticAlgorithm
             byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
             BitArray m_param = new BitArray(m_bytes);
 
-            //-----Crossover-----
-            int k = 0;
-            for (int j = i * p_param.Length; k < p_param.Length; j++)// Crossover each param and stack in offspring chromosome array
-            {
-                if (k != crossover_index)
-                    o_chromosome[j] = p_param[k];
-                else
-                    o_chromosome[j] = m_param[k];
-                k++;
-            }
-
+            DoCrossOver(p_param, m_param, crossover_index).CopyTo(o_chromosome, i * p_param.Length);
         }
 
         //----MUTATE----
@@ -128,6 +118,30 @@ public class GeneticAlgorithm
         test.CopyTo(offspring, 0);//TODO does this work?
 
         return new Individual(offspring, n_params);
+    }
+
+    /**
+     * Returns result of crossover: p_param - [0, crossover index] 
+     *                              m_param - [crossover index, end of array].
+     * 
+     * <param name="m_param"> Maternal parent chromosome 32 bit length for floating point (short) type. </param>
+     * <param name="p_param"> Paternal parent chromosome 32 bit length for floating point (short) type. </param>
+     * <param name="crossover_index"> The index in p_param array to begin cross over. </param>
+     * 
+     */
+    BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index)
+    {
+        BitArray offspring = new BitArray(p_param.Length);
+
+        for (int j = 0; j < p_param.Length; j++)
+        {
+            if (j != crossover_index)
+                offspring[j] = p_param[j];
+            else
+                offspring[j] = m_param[j];
+        }
+
+        return offspring;
     }
 
     /**
@@ -262,5 +276,15 @@ public class GeneticAlgorithm
             returnVal[i] = population[index].Parameters[i].ToString();
         }
         return returnVal;
+    }
+
+    /**
+     * Returns current generation individual at location <em>index</em>.
+     * 
+     * <returns> Current generation individual at location <em>index</em>. </returns>
+     */
+    public Individual getIndividual(int index)
+    {
+        return population[index];
     }
 }
