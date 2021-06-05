@@ -103,7 +103,7 @@ public class GeneticAlgorithm
 
             //crossover
             int k = 0;
-            for (int j = i * s; k < p_param.Length; j++)
+            for (int j = i * p_param.Length; k < p_param.Length; j++)
             {
                 if (k != crossover_index)
                     o_chromosome[j] = p_param[k];

@@ -251,11 +251,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   populationSize: 20
-  crossoverRate: 0.1
+  crossoverRate: 0.25
   mutationRate: 0.045
   targetParams:
-  - 10
-  - 10
+  - 15
+  - 12
+  - 29
   simulationSpeed: 0.5
   timeSteps: 100
 --- !u!4 &238569235
