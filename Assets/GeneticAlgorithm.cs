@@ -176,7 +176,7 @@ public class GeneticAlgorithm
         //-----roulette wheel method--------
         float[] prob = new float[m_population]; //initialize array to hold randomly generated probability values, one for each chromosome(Individual)
         for (int i = 0; i < m_population; i++)
-            prob[i] = random.NextDouble();
+            prob[i] = (float) random.NextDouble();
         Array.Sort(prob);
 
         int[] selection = new int[m_population]; //initialize array to hold selected chromosomes indicies
