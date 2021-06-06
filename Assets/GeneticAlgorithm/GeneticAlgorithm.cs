@@ -47,6 +47,7 @@ public class GeneticAlgorithm
 
     public GeneticAlgorithm()
     {
+        random = new Random();
         // stub for testing
     }
 
@@ -114,7 +115,7 @@ public class GeneticAlgorithm
             DoCrossOver(p_param, m_param, crossover_index).CopyTo(o_chromosome, i * p_param.Length);
         }
 
-        o_chromosome = DoMutate(o_chromosome);
+        o_chromosome = DoMutate(o_chromosome, 0, mutation_rate);
 
         BitArray o_bitarray = new BitArray(o_chromosome);
         o_bitarray.CopyTo(offspring, 0);
@@ -129,17 +130,19 @@ public class GeneticAlgorithm
      * <param name="o_chromosome"> Chromosome to mutate. </param>
      * <returns> The mutated chromosome. </returns>
      */
-    bool[] DoMutate(bool[] o_chromosome)
+    public bool[] DoMutate(bool[] o_chromosome, int start_index, float mutate_rate)
     {
+        bool[] ret = new bool[o_chromosome.Length];
+        Array.Copy(o_chromosome, ret, o_chromosome.Length);
         
-        int bitsToMutate = (int) (mutation_rate * o_chromosome.Length);
+        int bitsToMutate = (int) (mutate_rate * o_chromosome.Length);
         for (int i = 0; i < bitsToMutate; i++)
         {
-            int randIndex = random.Next(0, o_chromosome.Length);
-            o_chromosome[randIndex] = !o_chromosome[randIndex];
+            int randIndex = random.Next(start_index, o_chromosome.Length);
+            ret[randIndex] = !o_chromosome[randIndex];
         }
 
-        return o_chromosome;
+        return ret;
     }
 
 
