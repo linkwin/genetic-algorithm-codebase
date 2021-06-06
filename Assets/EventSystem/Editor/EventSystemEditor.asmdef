@@ -1,0 +1,15 @@
+{
+    "name": "EventSystemEditor",
+    "references": [
+        "GUID:02d5045bb179ea14eafc18efa84974f6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

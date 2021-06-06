@@ -45,6 +45,11 @@ public class GeneticAlgorithm
         }
     }
 
+    public GeneticAlgorithm()
+    {
+        // stub for testing
+    }
+
     /**
      * Called once per timestep/generation.
      */
@@ -148,7 +153,7 @@ public class GeneticAlgorithm
      * <param name="crossover_index"> The index in p_param array to begin cross over. </param>
      * 
      */
-    BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index)//TODO generalize to n crossover points
+    public BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index)//TODO generalize to n crossover points
     {
         BitArray offspring = new BitArray(p_param.Length);
 

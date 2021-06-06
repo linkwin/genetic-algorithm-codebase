@@ -154,15 +154,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   populationSize: 40
-  numParams: 3
-  crossoverRate: 0.2
-  mutationRate: 0.05
+  crossoverRate: 0.5
+  mutationRate: 0.0126
   targetParams:
-  - 1
-  - 1
-  - 1
+  - 10
+  - 16
+  - 35
   simulationSpeed: 0.5
   timeSteps: 100
+  point: {fileID: 6797116644366311275, guid: 37143d80eaabfd3469046347e3f38395, type: 3}
 --- !u!4 &238569235
 Transform:
   m_ObjectHideFlags: 0
