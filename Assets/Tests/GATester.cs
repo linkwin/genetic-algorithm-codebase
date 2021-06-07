@@ -13,14 +13,16 @@ namespace Tests
         [Test]
         public void float_conversion_and_xover()
         {
+            int size = 32; 
+
             GeneticAlgorithm ga = new GeneticAlgorithm();
 
             BitArray parent1 = new BitArray(BitConverter.GetBytes(15f));
             BitArray parent2 = new BitArray(BitConverter.GetBytes(15f));
 
-            BitArray offspring = ga.DoCrossOver(parent1, parent2, 16);
+            BitArray offspring = ga.DoCrossOver(parent1, parent2, size / 2, size - 1);
 
-            byte[] o = new byte[4];
+            byte[] o = new byte[size / 8];
             offspring.CopyTo(o, 0);
 
             Assert.AreEqual(15f, BitConverter.ToSingle(o, 0));
@@ -38,7 +40,7 @@ namespace Tests
             BitArray parent1 = new BitArray(BitConverter.GetBytes(n));
             BitArray parent2 = new BitArray(BitConverter.GetBytes(n));
 
-            BitArray offspring = ga.DoCrossOver(parent1, parent2, size / 2);
+            BitArray offspring = ga.DoCrossOver(parent1, parent2, size / 2, size - 1);
 
             byte[] o = new byte[size / 8];
             offspring.CopyTo(o, 0);
@@ -68,6 +70,36 @@ namespace Tests
                     Assert.Fail();
 
             Assert.AreNotEqual(chrom, m_chrom);
+        }
+
+        [Test]
+        public void preserve_negation_mutate_test()
+        {
+            float n = -46f;
+            int size = sizeof(float) * 8;
+
+            GeneticAlgorithm ga = new GeneticAlgorithm();
+
+            BitArray chromosome = new BitArray(BitConverter.GetBytes(n));
+
+            bool[] chrom = new bool[size];
+            chromosome.CopyTo(chrom, 0);
+
+            int i_start = 10;
+            bool[] m_chrom = ga.DoMutate(chrom, i_start, 0.5f);
+            //Array.Copy(chrom, m_chrom, size);
+
+            for (int i = 0; i < i_start; i++)
+                if (chrom[i] != m_chrom[i])
+                    Assert.Fail();
+
+            byte[] m = new byte[size / 8];
+            BitArray m_bitarray = new BitArray(m_chrom);
+            m_bitarray.CopyTo(m, 0);
+
+            float result = BitConverter.ToSingle(m, 0);
+            Assert.AreEqual(-1f, result/Mathf.Abs(result) );
+        
         }
 
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use

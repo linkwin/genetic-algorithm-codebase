@@ -102,7 +102,7 @@ public class GeneticAlgorithm
 
         bool[] o_chromosome = new bool[offspring_chromosome.Length];
 
-        int crossover_index = (int) (crossover_rate * (offspring_chromosome.Length));
+        int crossover_index = (int) (crossover_rate * (s * 8));
 
         for (int i = 0; i < n_params; i++)
         {
@@ -112,7 +112,7 @@ public class GeneticAlgorithm
             byte[] m_bytes = BitConverter.GetBytes(m.Parameters[i]);//initialize byte array for parameter i
             BitArray m_param = new BitArray(m_bytes);
 
-            DoCrossOver(p_param, m_param, crossover_index).CopyTo(o_chromosome, i * p_param.Length);
+            DoCrossOver(p_param, m_param, crossover_index, p_param.Length - 1).CopyTo(o_chromosome, i * p_param.Length);
         }
 
         o_chromosome = DoMutate(o_chromosome, 0, mutation_rate);
@@ -128,6 +128,8 @@ public class GeneticAlgorithm
      * bits of that many random bits.
      * 
      * <param name="o_chromosome"> Chromosome to mutate. </param>
+     * <param name="start_index"> Index in o_chromsome to start mutating (only mutate from start_index to end of array). </param>
+     * <param name="mutate_rate"> Determines the number of bits to mutate. calculated as mutate_rate * length of o_chromosome. </param>
      * <returns> The mutated chromosome. </returns>
      */
     public bool[] DoMutate(bool[] o_chromosome, int start_index, float mutate_rate)
@@ -151,18 +153,21 @@ public class GeneticAlgorithm
      * Returns result of crossover: p_param - [0, crossover index] 
      *                              m_param - [crossover index, end of array].
      * 
-     * <param name="m_param"> Maternal parent chromosome 32 bit length for floating point (short) type. </param>
-     * <param name="p_param"> Paternal parent chromosome 32 bit length for floating point (short) type. </param>
+     * <param name="m_param"> Maternal parent chromosome 32 bit length for floating point (single) type. </param>
+     * <param name="p_param"> Paternal parent chromosome 32 bit length for floating point (single) type. </param>
      * <param name="crossover_index"> The index in p_param array to begin cross over. </param>
-     * 
+     * <returns> Offspring produced from crossing over specified region from m_param to p_param. </returns>
      */
-    public BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index)//TODO generalize to n crossover points
+    public BitArray DoCrossOver(BitArray p_param, BitArray m_param, int crossover_index, int crossover_index_end)//TODO generalize to n crossover points
     {
+        if (crossover_index_end >= p_param.Length || crossover_index >= p_param.Length)
+            throw new IndexOutOfRangeException();
+
         BitArray offspring = new BitArray(p_param.Length);
 
         for (int j = 0; j < p_param.Length; j++)
         {
-            if (j != crossover_index)
+            if (j < crossover_index || j > crossover_index_end)
                 offspring[j] = p_param[j];
             else
                 offspring[j] = m_param[j];
